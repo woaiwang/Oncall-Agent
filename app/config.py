@@ -38,6 +38,13 @@ class Settings(BaseSettings):
     rag_top_k: int = 3
     rag_model: str = "qwen-max"  # 使用快速响应模型，不带扩展思考
 
+    # Reranker 重排配置（阿里云百炼 gte-rerank 模型）
+    # 参考：https://help.aliyun.com/zh/model-studio/rerank
+    rerank_enabled: bool = True
+    rerank_model: str = "gte-rerank"
+    rerank_top_n: int = 3          # 重排后最终保留的文档数
+    rerank_retrieval_k: int = 9    # 初检从Milvus获取的文档数（重排候选池大小）
+
     # 文档分块配置
     chunk_max_size: int = 800
     chunk_overlap: int = 100

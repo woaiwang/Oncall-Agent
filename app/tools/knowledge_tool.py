@@ -7,6 +7,7 @@ from langchain_core.tools import tool
 from loguru import logger
 
 from app.config import config
+from app.services.reranker_service import reranker_service
 from app.services.vector_store_manager import vector_store_manager
 
 
@@ -24,22 +25,32 @@ def retrieve_knowledge(query: str) -> Tuple[str, List[Document]]:
     """
     try:
         logger.info(f"知识检索工具被调用: query='{query}'")
-        
+
+        # 确定初检数量：重排开启时多检索一些做候选池
+        if reranker_service.enabled:
+            retrieval_k = config.rerank_retrieval_k
+        else:
+            retrieval_k = config.rag_top_k
+
         # 从向量存储中检索相关文档
         vector_store = vector_store_manager.get_vector_store()
         retriever = vector_store.as_retriever(
-            search_kwargs={"k": config.rag_top_k}
+            search_kwargs={"k": retrieval_k}
         )
-        
+
         docs = retriever.invoke(query)
-        
+
         if not docs:
             logger.warning("未检索到相关文档")
             return "没有找到相关信息。", []
-        
+
+        # 重排：用 Cross-Encoder 对初检结果精确打分排序
+        if reranker_service.enabled and len(docs) > config.rerank_top_n:
+            docs = reranker_service.rerank(query, docs)
+
         # 格式化文档为上下文
         context = format_docs(docs)
-        
+
         logger.info(f"检索到 {len(docs)} 个相关文档")
         return context, docs
         
