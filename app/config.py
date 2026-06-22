@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     # Reranker 重排配置（阿里云百炼 gte-rerank 模型）
     # 参考：https://help.aliyun.com/zh/model-studio/rerank
     rerank_enabled: bool = True
-    rerank_model: str = "gte-rerank"
+    rerank_model: str = "qwen3-rerank"  # qwen3-rerank 替代已下线的 gte-rerank
     rerank_top_n: int = 3          # 重排后最终保留的文档数
     rerank_retrieval_k: int = 9    # 初检从Milvus获取的文档数（重排候选池大小）
 

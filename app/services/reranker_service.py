@@ -1,4 +1,4 @@
-"""重排服务（Reranker）— 基于阿里云百炼 DashScope gte-rerank 模型
+"""重排服务（Reranker）— 基于阿里云百炼 DashScope qwen3-rerank 模型
 
 对向量检索的初检结果做精确语义重排。核心区别：
 
@@ -8,8 +8,9 @@
                           → 更准确但更慢 → 只对初检的 top-K 候选做
 
 流程：
-  用户Query → Milvus初检(候选池) → gte-rerank精排 → 取top_n → 返回
+  用户Query → Milvus初检(候选池) → qwen3-rerank精排 → 取top_n → 返回
 
+注意：gte-rerank 已下线，请使用 qwen3-rerank。
 参考：https://help.aliyun.com/zh/model-studio/rerank
 """
 
